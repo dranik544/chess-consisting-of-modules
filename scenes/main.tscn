@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scenes/board.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/pieces/pawn.gd" type="Script" id=2]
 
 [node name="main" type="Node2D"]
 
@@ -9,7 +10,12 @@ position = Vector2( 72, -72 )
 current = true
 zoom = Vector2( 0.22, 0.22 )
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
 [node name="board" parent="." instance=ExtResource( 1 )]
 position = Vector2( 72, -72 )
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="load pieces" type="Node" parent="board"]
+
+[node name="pawn" type="Node" parent="board/load pieces"]
+script = ExtResource( 2 )

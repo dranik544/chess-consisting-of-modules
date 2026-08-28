@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scenes/chess.gd" type="Script" id=1]
 [ext_resource path="res://sprites/Chess_board.png" type="Texture" id=2]
-[ext_resource path="res://scenes/pieces/pawn.gd" type="Script" id=3]
 
 [node name="board" type="Sprite"]
 texture = ExtResource( 2 )
@@ -16,8 +15,3 @@ position = Vector2( -72, 72 )
 
 [node name="turn" type="Sprite" parent="."]
 scale = Vector2( 1.1, 1.1 )
-
-[node name="load pieces" type="Node" parent="."]
-
-[node name="pawn" type="Node" parent="load pieces"]
-script = ExtResource( 3 )

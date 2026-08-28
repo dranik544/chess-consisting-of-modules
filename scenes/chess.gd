@@ -40,14 +40,14 @@ onready var turn: Sprite = $turn
 # -1 = black pawn
 
 var board: Array = [
-	[ 4,  2,  3,  5,  0,  3,  2,  4],
-	[ 1,  1,  1,  1, -1,  1,  1,  1],
+	[ 4,  2,  3,  5,  6,  3,  2,  4],
+	[ 1,  1,  1,  1,  1,  1,  1,  1],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
-	[-1, -1, -1, -1,  1, -1, -1, -1],
-	[-4, -2, -3, -5,  0, -3, -2, -4],
+	[-1, -1, -1, -1, -1, -1, -1, -1],
+	[-4, -2, -3, -5, -6, -3, -2, -4],
 ]
 var whiteTurn: bool = true
 var state: bool
@@ -55,18 +55,25 @@ var moves: Array = []
 var selectedPiece: Vector2
 var totalSteps: int = 0
 
+var whiteKing = false
+var blackKing = false
+var whiteRookLeft = false
+var whiteRookRight = false
+var blackRookLeft = false
+var blackRookRight = false
+
 
 func _ready():
 	_display_board()
 
 func _input(event):
 	if event is InputEventMouseButton && event.is_pressed():
-		if _is_mouse_out(): return
-		
 		var pos: Vector2 = Vector2(
 			floor(get_global_mouse_position().x / CELL_WIDTH),
 			floor(-get_global_mouse_position().y / CELL_WIDTH)
 		)
+		
+		if pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7: return
 		
 		print("Клик по ячейке: ", pos)
 		if !state && (whiteTurn && board[pos.y][pos.x] > 0 || !whiteTurn && board[pos.y][pos.x] < 0):
@@ -75,19 +82,6 @@ func _input(event):
 			state = true
 		elif state:
 			_set_move(Vector2(pos.y, pos.x))
-
-func _is_mouse_out():
-	if (
-		get_global_mouse_position() < global_position + -Vector2(
-			CELL_WIDTH * (BOARD_SIZE / 2),
-			CELL_WIDTH * (BOARD_SIZE / 2)
-		)
-		||
-		get_global_mouse_position() > Vector2(
-			CELL_WIDTH * BOARD_SIZE,
-			CELL_WIDTH * BOARD_SIZE
-		)
-	): return true
 
 func _display_board():
 	_clear_board()
@@ -114,8 +108,7 @@ func _display_board():
 				
 				_: textureHolder.queue_free()
 	
-	if whiteTurn: turn.texture = WHITE_TURN
-	else:         turn.texture = BLACK_TURN
+	turn.texture = WHITE_TURN if whiteTurn else BLACK_TURN
 
 func _clear_board():
 	for i in pieces.get_children():
@@ -128,12 +121,45 @@ func _clear_dots():
 func _set_move(pos: Vector2):
 	for i in moves:
 		if i.x == pos.x && i.y == pos.y:
-			board[pos.x][pos.y] = board[selectedPiece.x][selectedPiece.y]
 			match board[selectedPiece.x][selectedPiece.y]:
 				1:
 					if i.x == 7: _change_piece(pos, 5)
 				-1:
 					if i.x == 0: _change_piece(pos, -5)
+				4:
+					if selectedPiece.x == 0 && selectedPiece.y == 0: whiteRookLeft = true
+					elif selectedPiece.x == 7 && selectedPiece.y == 0: whiteRookRight = true
+				-4:
+					if selectedPiece.x == 0 && selectedPiece.y == 7: whiteRookLeft = true
+					elif selectedPiece.x == 7 && selectedPiece.y == 7: whiteRookRight = true
+				6:
+					if selectedPiece.x == 0 && selectedPiece.y == 4:
+						whiteKing = true
+						if i.y == 2:
+							whiteRookLeft = true
+							whiteRookRight = true
+							board[0][0] = 0
+							board[0][3] = 4
+						if i.y == 6:
+							whiteRookLeft = true
+							whiteRookRight = true
+							board[0][7] = 0
+							board[0][5] = 4
+				-6:
+					if selectedPiece.x == 7 && selectedPiece.y == 4:
+						blackKing = true
+						if i.y == 2:
+							blackRookLeft = true
+							blackRookRight = true
+							board[7][0] = 0
+							board[7][3] = -4
+						if i.y == 6:
+							blackRookLeft = true
+							blackRookRight = true
+							board[7][7] = 0
+							board[7][5] = -4
+				
+			board[pos.x][pos.y] = board[selectedPiece.x][selectedPiece.y]
 			board[selectedPiece.x][selectedPiece.y] = 0
 			whiteTurn = not whiteTurn
 			state = false
@@ -244,6 +270,17 @@ func _get_king_moves():
 		Vector2(-1, 0),
 		Vector2(-1, 1),
 	]
+	
+	if whiteTurn && !whiteKing:
+		if !whiteRookLeft && _is_empty(Vector2(0, 1)) && _is_empty(Vector2(0, 2)) && _is_empty(Vector2(0, 3)):
+			directions.append(Vector2(0, -2))
+		if !whiteRookRight && _is_empty(Vector2(0, 6)) && _is_empty(Vector2(0, 5)):
+			directions.append(Vector2(0, 2))
+	elif !whiteTurn && !blackKing:
+		if !blackRookLeft && _is_empty(Vector2(7, 1)) && _is_empty(Vector2(7, 2)) && _is_empty(Vector2(7, 3)):
+			directions.append(Vector2(0, -2))
+		if !blackRookRight && _is_empty(Vector2(7, 6)) && _is_empty(Vector2(7, 5)):
+			directions.append(Vector2(0, 2))
 	
 	return _calculate_moves(directions, true)
 
