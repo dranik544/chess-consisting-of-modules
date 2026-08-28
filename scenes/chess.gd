@@ -3,21 +3,6 @@ extends Sprite
 const BOARD_SIZE: int = 8
 const CELL_WIDTH: int = 18
 
-# pieces index
-# 6 = white king
-# 5 = white queen
-# 4 = white rook
-# 3 = white bishop
-# 2 = white knight
-# 1 = white pawn
-# 0 = null
-# -6 = black king
-# -5 = black queen
-# -4 = black rook
-# -3 = black bishop
-# -2 = black knight
-# -1 = black pawn
-
 const WHITE_BISHOP: StreamTexture = preload("res://sprites/white_bishop.png")
 const WHITE_KING: StreamTexture =   preload("res://sprites/white_king.png")
 const WHITE_KNIGHT: StreamTexture = preload("res://sprites/white_knight.png")
@@ -39,15 +24,30 @@ onready var pieces: Node2D = $pieces
 onready var dots: Node2D = $dots
 onready var turn: Sprite = $turn
 
+# pieces index
+# 6 = white king
+# 5 = white queen
+# 4 = white rook
+# 3 = white bishop
+# 2 = white knight
+# 1 = white pawn
+# 0 = null
+# -6 = black king
+# -5 = black queen
+# -4 = black rook
+# -3 = black bishop
+# -2 = black knight
+# -1 = black pawn
+
 var board: Array = [
-	[ 4,  2,  3,  5,  6,  3,  2,  4],
-	[ 1,  1,  1,  1,  1,  1,  1,  1],
+	[ 4,  2,  3,  5,  0,  3,  2,  4],
+	[ 1,  1,  1,  1, -1,  1,  1,  1],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
 	[ 0,  0,  0,  0,  0,  0,  0,  0],
-	[-1, -1, -1, -1, -1, -1, -1, -1],
-	[-4, -2, -3, -5, -6, -3, -2, -4],
+	[-1, -1, -1, -1,  1, -1, -1, -1],
+	[-4, -2, -3, -5,  0, -3, -2, -4],
 ]
 var whiteTurn: bool = true
 var state: bool
@@ -73,6 +73,8 @@ func _input(event):
 			selectedPiece = Vector2(pos.y, pos.x)
 			_show_options()
 			state = true
+		elif state:
+			_set_move(Vector2(pos.y, pos.x))
 
 func _is_mouse_out():
 	if (
@@ -88,6 +90,8 @@ func _is_mouse_out():
 	): return true
 
 func _display_board():
+	_clear_board()
+	
 	for iY in BOARD_SIZE:
 		for iX in BOARD_SIZE:
 			var textureHolder: Sprite = Sprite.new()
@@ -108,7 +112,41 @@ func _display_board():
 				-2: textureHolder.texture = BLACK_KNIGHT
 				-1: textureHolder.texture = BLACK_PAWN
 				
-				_: textureHolder.texture = null
+				_: textureHolder.queue_free()
+	
+	if whiteTurn: turn.texture = WHITE_TURN
+	else:         turn.texture = BLACK_TURN
+
+func _clear_board():
+	for i in pieces.get_children():
+		i.queue_free()
+
+func _clear_dots():
+	for i in dots.get_children():
+		i.queue_free()
+
+func _set_move(pos: Vector2):
+	for i in moves:
+		if i.x == pos.x && i.y == pos.y:
+			board[pos.x][pos.y] = board[selectedPiece.x][selectedPiece.y]
+			match board[selectedPiece.x][selectedPiece.y]:
+				1:
+					if i.x == 7: _change_piece(pos, 5)
+				-1:
+					if i.x == 0: _change_piece(pos, -5)
+			board[selectedPiece.x][selectedPiece.y] = 0
+			whiteTurn = not whiteTurn
+			state = false
+			
+			_display_board()
+			
+			break
+	
+	_clear_dots()
+	state = false
+
+func _change_piece(pos: Vector2, piece: int):
+	board[pos.x][pos.y] = piece
 
 func _show_options():
 	moves = _get_moves()
@@ -118,6 +156,8 @@ func _show_options():
 	_show_dots()
 
 func _show_dots():
+	_clear_dots()
+	
 	for i in moves:
 		var textureHolder: Sprite = Sprite.new()
 		dots.add_child(textureHolder)

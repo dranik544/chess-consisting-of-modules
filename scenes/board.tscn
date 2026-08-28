@@ -15,6 +15,7 @@ position = Vector2( -72, 72 )
 position = Vector2( -72, 72 )
 
 [node name="turn" type="Sprite" parent="."]
+scale = Vector2( 1.1, 1.1 )
 
 [node name="load pieces" type="Node" parent="."]
 
