@@ -62,6 +62,9 @@ var whiteRookRight = false
 var blackRookLeft = false
 var blackRookRight = false
 
+var whiteKingPos: Vector2 = Vector2(0, 4)
+var blackKingPos: Vector2 = Vector2(7, 4)
+
 
 func _ready():
 	_display_board()
@@ -121,11 +124,13 @@ func _clear_dots():
 func _set_move(pos: Vector2):
 	for i in moves:
 		if i.x == pos.x && i.y == pos.y:
-			match board[selectedPiece.x][selectedPiece.y]:
+			var piece = board[selectedPiece.x][selectedPiece.y]
+			
+			match piece:
 				1:
-					if i.x == 7: _change_piece(pos, 5)
+					if i.x == 7: piece = 5
 				-1:
-					if i.x == 0: _change_piece(pos, -5)
+					if i.x == 0: piece = -5
 				4:
 					if selectedPiece.x == 0 && selectedPiece.y == 0: whiteRookLeft = true
 					elif selectedPiece.x == 7 && selectedPiece.y == 0: whiteRookRight = true
@@ -145,6 +150,7 @@ func _set_move(pos: Vector2):
 							whiteRookRight = true
 							board[0][7] = 0
 							board[0][5] = 4
+					whiteKingPos = i
 				-6:
 					if selectedPiece.x == 7 && selectedPiece.y == 4:
 						blackKing = true
@@ -158,9 +164,11 @@ func _set_move(pos: Vector2):
 							blackRookRight = true
 							board[7][7] = 0
 							board[7][5] = -4
-				
-			board[pos.x][pos.y] = board[selectedPiece.x][selectedPiece.y]
+					blackKingPos = i
+			
+			board[pos.x][pos.y] = piece
 			board[selectedPiece.x][selectedPiece.y] = 0
+			
 			whiteTurn = not whiteTurn
 			state = false
 			
@@ -271,6 +279,11 @@ func _get_king_moves():
 		Vector2(-1, 1),
 	]
 	
+	if whiteTurn:
+		board[whiteKingPos.x][whiteKingPos.y] = 0
+	if !whiteTurn:
+		board[blackKingPos.x][blackKingPos.y] = 0
+	
 	if whiteTurn && !whiteKing:
 		if !whiteRookLeft && _is_empty(Vector2(0, 1)) && _is_empty(Vector2(0, 2)) && _is_empty(Vector2(0, 3)):
 			directions.append(Vector2(0, -2))
@@ -282,7 +295,24 @@ func _get_king_moves():
 		if !blackRookRight && _is_empty(Vector2(7, 6)) && _is_empty(Vector2(7, 5)):
 			directions.append(Vector2(0, 2))
 	
-	return _calculate_moves(directions, true)
+	
+	var _moves: Array = []
+	for i in directions:
+		var pos = selectedPiece
+		pos += i
+		
+		if _is_valid_position(pos):
+			if !_is_in_check(pos):
+				if   _is_empty(pos): _moves.append(pos)
+				elif _is_enemy(pos):
+					_moves.append(pos)
+	
+	if whiteTurn:
+		board[whiteKingPos.x][whiteKingPos.y] = 6
+	if !whiteTurn:
+		board[blackKingPos.x][blackKingPos.y] = -6
+	
+	return _moves
 
 func _get_knight_moves():
 	var directions: Array = [
@@ -321,6 +351,69 @@ func _get_pawn_moves():
 			_moves.append(attack)
 	
 	return _moves
+
+func _is_in_check(pos: Vector2):
+	var directions: Array = [
+		Vector2(0, 1),
+		Vector2(1, 1),
+		Vector2(1, 0),
+		Vector2(1, -1),
+		Vector2(0, -1),
+		Vector2(-1, -1),
+		Vector2(-1, 0),
+		Vector2(-1, 1),
+	]
+	
+	var pawnDirection: int = 1 if whiteTurn else -1
+	var pawnAttack: Array = [
+		pos + Vector2(pawnDirection, 1),
+		pos + Vector2(pawnDirection, -1),
+	]
+	
+	for i in pawnAttack:
+		if _is_valid_position(i):
+			if (whiteTurn && board[i.x][i.y] == -1 || !whiteTurn && board[i.x][i.y] == 1):
+				return true
+	
+	for i in directions:
+		var iPos: Vector2 = pos + i
+		if _is_valid_position(iPos):
+			if whiteTurn && board[iPos.x][iPos.y] == -6 || !whiteTurn && board[iPos.x][iPos.y] == 6:
+				 return true
+	
+	for i in directions:
+		var iPos: Vector2 = pos + i
+		while _is_valid_position(iPos):
+			if !_is_empty(iPos):
+				var piece: int = board[iPos.x][iPos.y]
+				if (i.x == 0 || i.y == 0) && (whiteTurn && piece in [-4, -5] || !whiteTurn && piece in [4, 5]):
+					return true
+				elif (i.x != 0 && i.y != 0) && (whiteTurn && piece in [-3, -5] || !whiteTurn && piece in [3, 5]):
+					return true
+				break
+			iPos += i
+	
+	var knightDirections: Array = [
+		Vector2(1, -2),
+		Vector2(2, -1),
+		
+		Vector2(2, 1),
+		Vector2(1, 2),
+		
+		Vector2(-1, 2),
+		Vector2(-2, 1),
+		
+		Vector2(-1, -2),
+		Vector2(-2, -1),
+	]
+	
+	for i in knightDirections:
+		var iPos: Vector2 = pos + i
+		if _is_valid_position(iPos):
+			if whiteTurn && board[iPos.x][iPos.y] == -2 || !whiteTurn && board[iPos.x][iPos.y] == 2:
+				return true
+	
+	return false
 
 func _is_valid_position(pos: Vector2):
 	if pos.x >= 0 && pos.x < BOARD_SIZE && pos.y >= 0 && pos.y < BOARD_SIZE: return true
