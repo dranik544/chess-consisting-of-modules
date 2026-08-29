@@ -8,16 +8,172 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Reference",
+"class": "JSONSchema",
+"language": "GDScript",
+"path": "res://addons/JSON_Schema_Validator/json_schema_validator.gd"
+}, {
+"base": "Resource",
+"class": "ModConfig",
+"language": "GDScript",
+"path": "res://addons/mod_loader/resources/mod_config.gd"
+}, {
+"base": "Resource",
+"class": "ModData",
+"language": "GDScript",
+"path": "res://addons/mod_loader/resources/mod_data.gd"
+}, {
+"base": "Object",
+"class": "ModLoaderConfig",
+"language": "GDScript",
+"path": "res://addons/mod_loader/api/config.gd"
+}, {
+"base": "Resource",
+"class": "ModLoaderCurrentOptions",
+"language": "GDScript",
+"path": "res://addons/mod_loader/resources/options_current.gd"
+}, {
+"base": "Node",
+"class": "ModLoaderDeprecated",
+"language": "GDScript",
+"path": "res://addons/mod_loader/api/deprecated.gd"
+}, {
+"base": "Node",
+"class": "ModLoaderLog",
+"language": "GDScript",
+"path": "res://addons/mod_loader/api/log.gd"
+}, {
+"base": "Object",
+"class": "ModLoaderMod",
+"language": "GDScript",
+"path": "res://addons/mod_loader/api/mod.gd"
+}, {
+"base": "Reference",
+"class": "ModLoaderModManager",
+"language": "GDScript",
+"path": "res://addons/mod_loader/api/mod_manager.gd"
+}, {
+"base": "Resource",
+"class": "ModLoaderOptionsProfile",
+"language": "GDScript",
+"path": "res://addons/mod_loader/resources/options_profile.gd"
+}, {
+"base": "Reference",
+"class": "ModLoaderSetupLog",
+"language": "GDScript",
+"path": "res://addons/mod_loader/setup/setup_log.gd"
+}, {
+"base": "Reference",
+"class": "ModLoaderSetupUtils",
+"language": "GDScript",
+"path": "res://addons/mod_loader/setup/setup_utils.gd"
+}, {
+"base": "Object",
+"class": "ModLoaderUserProfile",
+"language": "GDScript",
+"path": "res://addons/mod_loader/api/profile.gd"
+}, {
+"base": "Node",
+"class": "ModLoaderUtils",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/mod_loader_utils.gd"
+}, {
+"base": "Resource",
+"class": "ModManifest",
+"language": "GDScript",
+"path": "res://addons/mod_loader/resources/mod_manifest.gd"
+}, {
+"base": "Resource",
+"class": "ModUserProfile",
+"language": "GDScript",
+"path": "res://addons/mod_loader/resources/mod_user_profile.gd"
+}, {
+"base": "Reference",
+"class": "_ModLoaderCLI",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/cli.gd"
+}, {
+"base": "Reference",
+"class": "_ModLoaderCache",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/cache.gd"
+}, {
+"base": "Reference",
+"class": "_ModLoaderDependency",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/dependency.gd"
+}, {
+"base": "Reference",
+"class": "_ModLoaderFile",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/file.gd"
+}, {
+"base": "Object",
+"class": "_ModLoaderGodot",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/godot.gd"
+}, {
+"base": "Reference",
+"class": "_ModLoaderPath",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/path.gd"
+}, {
+"base": "Reference",
+"class": "_ModLoaderScriptExtension",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/script_extension.gd"
+}, {
+"base": "Node",
+"class": "_ModLoaderSteam",
+"language": "GDScript",
+"path": "res://addons/mod_loader/internal/third_party/steam.gd"
+} ]
+_global_script_class_icons={
+"JSONSchema": "",
+"ModConfig": "",
+"ModData": "",
+"ModLoaderConfig": "",
+"ModLoaderCurrentOptions": "",
+"ModLoaderDeprecated": "",
+"ModLoaderLog": "",
+"ModLoaderMod": "",
+"ModLoaderModManager": "",
+"ModLoaderOptionsProfile": "",
+"ModLoaderSetupLog": "",
+"ModLoaderSetupUtils": "",
+"ModLoaderUserProfile": "",
+"ModLoaderUtils": "",
+"ModManifest": "",
+"ModUserProfile": "",
+"_ModLoaderCLI": "",
+"_ModLoaderCache": "",
+"_ModLoaderDependency": "",
+"_ModLoaderFile": "",
+"_ModLoaderGodot": "",
+"_ModLoaderPath": "",
+"_ModLoaderScriptExtension": "",
+"_ModLoaderSteam": ""
+}
+
 [application]
 
 config/name="Chess Consisting of Modules"
 run/main_scene="res://scenes/main.tscn"
-config/icon="res://icon.png"
+boot_splash/image="res://sprites/board1.png"
+boot_splash/use_filter=false
+config/icon="res://sprites/pieces/white_pawn.png"
+
+[autoload]
+
+ModLoaderStore="*res://addons/mod_loader/mod_loader_store.gd"
+ModLoader="*res://addons/mod_loader/mod_loader.gd"
+Global="*res://global.gd"
 
 [display]
 
-window/size/width=720
-window/size/height=720
+window/size/width=640
+window/size/height=920
 window/handheld/orientation="portrait"
 window/stretch/mode="2d"
 window/stretch/aspect="expand"

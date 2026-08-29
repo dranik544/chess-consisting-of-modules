@@ -1,5 +1,5 @@
 # pawn.gd
-extends "res://scripts/base_piece.gd"
+extends "res://scripts/pieces/base_piece.gd"
 
 func get_moves(board) -> Array:
 	var moves = []

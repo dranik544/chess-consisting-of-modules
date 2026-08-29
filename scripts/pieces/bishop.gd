@@ -1,14 +1,14 @@
-# rook.gd
-extends "res://scripts/base_piece.gd"
+# bishop.gd
+extends "res://scripts/pieces/base_piece.gd"
 
 
 func get_moves(board) -> Array:
 	var moves = []
 	var directions = [
-		Vector2(0, 1),
-		Vector2(1, 0),
-		Vector2(0, -1),
-		Vector2(-1, 0)
+		Vector2(1, 1),
+		Vector2(1, -1),
+		Vector2(-1, -1),
+		Vector2(-1, 1)
 	]
 	
 	for d in directions:

@@ -7,15 +7,20 @@ const CELL_SIZE: int = 36
 onready var pieces_node: Node2D = $pieces
 onready var dots_node: Node2D = $dots
 onready var tween = $Tween
+onready var cards: Node = get_tree().get_first_node_in_group("cards")
 
 var grid = []
-var white_turn = true
 var selected_piece = null
 var legal_moves = []
 var state = false
 
+var placement_mode = false
+var placement_card = null
+
 
 func _ready():
+	add_to_group("board")
+	
 	init_grid()
 	place_pieces()
 
@@ -215,7 +220,7 @@ func make_move(from: Vector2, to: Vector2):
 #		piece.position = get_pixel_position(to)
 	
 	board_move_animation()
-	white_turn = not white_turn
+	Global.white_turn = not Global.white_turn
 	clear_dots()
 	selected_piece = null
 	state = false
@@ -233,7 +238,7 @@ func set_null_position(pos: Vector2):
 
 
 func check_game_state():
-	var current_color = white_turn
+	var current_color = Global.white_turn
 	var king_pos = find_king(current_color)
 	var in_check = is_in_check(king_pos, current_color)
 	
@@ -268,14 +273,46 @@ func show_dots(moves: Array):
 		dot.texture = preload("res://sprites/dot.png")
 		dot.position = get_pixel_position(pos)
 		dots_node.add_child(dot)
+		var tween: Tween = Tween.new()
+		dot.add_child(tween)
+		tween.connect("tween_completed", tween, "queue_free")
+		tween.interpolate_property(dot, "scale", Vector2.ZERO, Vector2.ONE, 0.1, Tween.TRANS_CIRC, Tween.EASE_OUT)
+		tween.start()
 
 
 func on_click(cell: Vector2):
 	if not is_valid(cell): return
 	
+	if placement_mode:
+		if not is_valid(cell): return
+		if not is_empty(cell): return
+		if Global.white_turn and cell.x > 2: return
+		if not Global.white_turn and cell.x < 5: return
+		
+		var piece = placement_card.piece.instance()
+		piece.color = Global.white_turn
+		piece.gridPos = cell
+		piece.position = get_pixel_position(cell)
+		pieces_node.add_child(piece)
+		grid[cell.x][cell.y] = piece
+		
+		if cards == null:
+			cards = get_tree().get_first_node_in_group("cards")
+		
+		if cards:
+			cards.remove_card(placement_card, Global.white_turn)
+		
+		placement_mode = false
+		placement_card = null
+		clear_dots()
+		
+		Global.white_turn = not Global.white_turn
+		check_game_state()
+		return
+	
 	if not state:
 		var piece = get_piece(cell)
-		if piece != null and piece.color == white_turn:
+		if piece != null and piece.color == Global.white_turn:
 			selected_piece = piece
 			legal_moves = get_legal_moves_for(piece)
 			if not legal_moves.empty():
@@ -289,7 +326,7 @@ func on_click(cell: Vector2):
 			make_move(selected_piece.gridPos, cell)
 		else:
 			var piece = get_piece(cell)
-			if piece != null and piece.color == white_turn:
+			if piece != null and piece.color == Global.white_turn:
 				selected_piece = piece
 				legal_moves = get_legal_moves_for(piece)
 				if not legal_moves.empty():
@@ -302,6 +339,23 @@ func on_click(cell: Vector2):
 				state = false
 				clear_dots()
 
+func enter_placement_mode(card_instance, color: bool):
+	placement_mode = true
+	placement_card = card_instance
+	show_placement_zones()
+
+func show_placement_zones():
+	clear_dots()
+	var start_row = 0 if Global.white_turn else 5
+	var end_row = 2 if Global.white_turn else 7
+	for row in range(start_row, end_row + 1):
+		for col in range(8):
+			var pos = Vector2(row, col)
+			if is_empty(pos):
+				var dot = Sprite.new()
+				dot.texture = preload("res://sprites/dot.png")
+				dot.position = get_pixel_position(pos)
+				dots_node.add_child(dot)
 
 func board_move_animation():
 	tween.interpolate_property(self, "scale", Vector2(1.0, 1.0), Vector2(0.99, 0.99), 0.04, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
