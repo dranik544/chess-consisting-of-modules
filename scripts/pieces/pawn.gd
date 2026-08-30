@@ -25,6 +25,9 @@ func on_move(board, from: Vector2, to: Vector2):
 	if (color and to.x == 7) or (not color and to.x == 0):
 		var queen_scene = load("res://scenes/pieces/queen.tscn")
 		var queen = queen_scene.instance()
+		if board.grid[to.x][to.y] != null:
+			board.grid[to.x][to.y].queue_free()
+			board.grid[to.x][to.y] = null
 		queen.color = color
 		queen.gridPos = to
 		board.add_piece(queen, to)

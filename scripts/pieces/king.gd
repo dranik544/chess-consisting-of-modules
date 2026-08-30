@@ -1,6 +1,11 @@
 # king.gd
 extends "res://scripts/pieces/base_piece.gd"
 
+onready var danger_label = $danger
+
+
+func checkLabel(status: bool):
+	danger_label.visible = status
 
 func get_moves(board) -> Array:
 	var moves = []

@@ -12,7 +12,7 @@ func _ready():
 	connect("focus_exited", self, "focus_exited_animation")
 
 func focus_entered_animation():
-	tween.interpolate_property(self, "rect_position:y", 0.0, rect_position.y - (12.0 if color else -12.0), 0.15, Tween.TRANS_BACK, Tween.EASE_OUT)
+	tween.interpolate_property(self, "rect_position:y", 0.0, rect_position.y - (96.0 if color else -96.0), 0.15, Tween.TRANS_BACK, Tween.EASE_OUT)
 	tween.start()
 
 func focus_exited_animation():

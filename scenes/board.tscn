@@ -5,7 +5,7 @@
 
 [sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 0 )
-colors = PoolColorArray( 0, 0, 0, 0.784314 )
+colors = PoolColorArray( 0, 0, 0, 1 )
 
 [sub_resource type="GradientTexture2D" id=2]
 gradient = SubResource( 1 )
@@ -15,8 +15,8 @@ height = 288
 [node name="board" type="Node2D"]
 script = ExtResource( 1 )
 
-[node name="Sprite2" type="Sprite" parent="."]
-modulate = Color( 0, 0, 0, 1 )
+[node name="bg" type="Sprite" parent="."]
+modulate = Color( 0, 0, 0, 0.686275 )
 scale = Vector2( 1.05, 1.05 )
 z_index = -1
 texture = SubResource( 2 )

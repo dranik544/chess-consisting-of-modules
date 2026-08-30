@@ -59,7 +59,9 @@ func death_animation():
 	tween.start()
 	
 	yield(tween, "tween_completed")
-	yield(get_tree().create_timer(20.0), "timeout")
+	tween.interpolate_property(death_sprite, "scale", Vector2.ONE, Vector2.ONE*0.95, 2.0)
+	tween.start()
+	yield(tween, "tween_completed")
 	
 	tween.interpolate_property(death_sprite, "modulate:a", death_sprite.modulate.a, 0.0, 10.0)
 	tween.start()

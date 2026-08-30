@@ -207,9 +207,9 @@ func make_move(from: Vector2, to: Vector2):
 	var legal = get_legal_moves_for(piece)
 	if not (to in legal): return
 	
-	try_give_card()
-	
 	var new_piece = piece.on_move(self, from, to)
+	
+	try_give_card()
 	
 	if new_piece != piece:
 		grid[from.x][from.y] = null
@@ -224,6 +224,7 @@ func make_move(from: Vector2, to: Vector2):
 	
 	board_move_animation()
 	Global.white_turn = not Global.white_turn
+	Global.emit_signal("turnChanged")
 	clear_dots()
 	selected_piece = null
 	state = false
@@ -250,7 +251,7 @@ func try_give_card():
 			if cards:
 				if !Global.modCards.empty():
 					randomize()
-					cards.give_card(Global.modCards[randi() % Global.modCards.size()], not Global.white_turn)
+					cards.give_card(Global.modCards[randi() % Global.modCards.size()], Global.white_turn)
 
 
 func check_game_state():
@@ -269,9 +270,13 @@ func check_game_state():
 					break
 		if has_legal: break
 	
-	if in_check and not has_legal:
+	if !in_check:
+		grid[king_pos.x][king_pos.y].checkLabel(false)
+	elif in_check and not has_legal:
+		grid[king_pos.x][king_pos.y].checkLabel(true)
 		print("ШАХ И МАТ! Победили: ", "чёрные" if current_color else "белые")
 	elif in_check:
+		grid[king_pos.x][king_pos.y].checkLabel(true)
 		print("ШАХ!")
 	elif not has_legal:
 		print("ПАТ! Ничья")
@@ -320,6 +325,7 @@ func on_click(cell: Vector2):
 		clear_dots()
 		
 		Global.white_turn = not Global.white_turn
+		Global.emit_signal("turnChanged")
 		check_game_state()
 		return
 	
@@ -353,11 +359,9 @@ func on_click(cell: Vector2):
 				clear_dots()
 
 func enter_placement_mode(card_instance, color: bool):
-	if (
-		( Global.white_turn && is_in_check(find_king( Global.white_turn),  Global.white_turn))
-		||
-		(!Global.white_turn && is_in_check(find_king(!Global.white_turn), !Global.white_turn))
-	): exit_placement_mode(); return
+	if is_in_check(find_king(Global.white_turn), Global.white_turn):
+		exit_placement_mode()
+		return
 	
 	placement_mode = true
 	placement_card = card_instance

@@ -25,18 +25,19 @@ func give_card(card: PackedScene, color: bool):
 	(white_container if color else black_container).add_child(_card)
 	cards.append(_card)
 	
+	_card.flip_v = not color
 	_card.connect("pressed", self, "_on_card_pressed", [_card, color])
 	
-	tween.interpolate_property(_card, "modulate:a", 0.0, 1.0, 0.15)
-	tween.interpolate_property(_card, "rect_scale:x", 0.0, 1.0, 0.15, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
+	tween.interpolate_property(_card, "modulate:a", 0.0, 1.0, 0.3)
+	tween.interpolate_property(_card, "rect_scale:x", 0.0, 1.0, 0.3, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
 	tween.start()
 	yield(tween, "tween_completed")
 	_card.flip_h = true
-	tween.interpolate_property(_card, "rect_scale:x", 1.0, 0.0, 0.15, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
+	tween.interpolate_property(_card, "rect_scale:x", 1.0, 0.0, 0.3, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
 	tween.start()
 	yield(tween, "tween_completed")
 	_card.flip_h = false
-	tween.interpolate_property(_card, "rect_scale:x", 0.0, 1.0, 0.15, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
+	tween.interpolate_property(_card, "rect_scale:x", 0.0, 1.0, 0.3, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
 	tween.start()
 
 func _on_card_pressed(card, color: bool):
@@ -57,7 +58,6 @@ func _on_card_pressed(card, color: bool):
 
 func remove_card(card, color: bool):
 	cards.erase(card)
-	(white_container if color else black_container).remove_child(card)
 	
 	tween.interpolate_property(card, "rect_scale", card.rect_scale, Vector2.ONE*3, 0.4, Tween.TRANS_CIRC, Tween.EASE_IN)
 	tween.interpolate_property(card, "rect_rotation", card.rect_rotation, 15, 0.4, Tween.TRANS_CIRC, Tween.EASE_IN)
@@ -65,4 +65,5 @@ func remove_card(card, color: bool):
 	tween.start()
 	yield(tween, "tween_all_completed")
 	
+	(white_container if color else black_container).remove_child(card)
 	card.queue_free()

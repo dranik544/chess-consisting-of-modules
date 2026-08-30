@@ -1,0 +1,193 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://sprites/pieces/white_pawn.png" type="Texture" id=1]
+[ext_resource path="res://fonts/progoth.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://theme.tres" type="Theme" id=3]
+[ext_resource path="res://sprites/pieces/white_king.png" type="Texture" id=4]
+[ext_resource path="res://sprites/pieces/white_bishop.png" type="Texture" id=5]
+[ext_resource path="res://sprites/pieces/white_rook.png" type="Texture" id=6]
+[ext_resource path="res://scripts/bg.gd" type="Script" id=7]
+[ext_resource path="res://scripts/menu.gd" type="Script" id=8]
+
+[sub_resource type="Shader" id=3]
+code = "shader_type canvas_item;
+
+// 
+uniform float time_val;
+uniform float spin_time;
+uniform vec4 colour_1 = vec4(0.0, 0.0, 0.0, 1.0);
+uniform vec4 colour_2 = vec4(0.0, 0.4, 0.9, 1.0);
+uniform vec4 colour_3 = vec4(1.0, 0.0, 0.2, 1.0);
+uniform float contrast = 1.0;
+uniform float spin_amount = 1.05;
+
+const float PIXEL_SIZE_FAC = 700.0;
+const float SPIN_EASE = 0.5;
+
+void fragment() {
+    // love_ScreenSize.xy → 1.0 / SCREEN_PIXEL_SIZE dans Godot 4
+    vec2 screen_size = 1.0 / SCREEN_PIXEL_SIZE;
+
+    // Calcul UV pixelisé centré
+    float pixel_size = length(screen_size) / PIXEL_SIZE_FAC;
+    vec2 uv = (floor(FRAGCOORD.xy * (1.0 / pixel_size)) * pixel_size
+               - 0.5 * screen_size)
+              / length(screen_size)
+              - vec2(0.12, 0.0);
+    float uv_len = length(uv);
+
+    // Tourbillon central
+    float speed = (spin_time * SPIN_EASE * 0.2) + 302.2;
+    float new_pixel_angle = atan(uv.y, uv.x)
+                          + speed
+                          - SPIN_EASE * 20.0
+                            * (spin_amount * uv_len + (1.0 - spin_amount));
+    vec2 mid = (screen_size / length(screen_size)) / 2.0;
+    uv = vec2(
+        uv_len * cos(new_pixel_angle) + mid.x,
+        uv_len * sin(new_pixel_angle) + mid.y
+    ) - mid;
+
+    // Effet peinture
+    uv *= 30.0;
+    float spd = time_val * 2.0;
+    vec2 uv2 = vec2(uv.x + uv.y);
+
+    for (int i = 0; i < 5; i++) {
+        uv2 += sin(max(uv.x, uv.y)) + uv;
+        uv  += 0.5 * vec2(
+            cos(5.1123314 + 0.353 * uv2.y + spd * 0.131121),
+            sin(uv2.x - 0.113 * spd)
+        );
+        uv  -= cos(uv.x + uv.y) - sin(uv.x * 0.711 - uv.y);
+    }
+
+    // Mélange des 3 couleurs
+    float contrast_mod = 0.25 * contrast + 0.5 * spin_amount + 1.2;
+    float paint_res = min(2.0, max(0.0, length(uv) * 0.035 * contrast_mod));
+    float c1p = max(0.0, 1.0 - contrast_mod * abs(1.0 - paint_res));
+    float c2p = max(0.0, 1.0 - contrast_mod * abs(paint_res));
+    float c3p = 1.0 - min(1.0, c1p + c2p);
+
+    COLOR = (0.3 / contrast) * colour_1
+          + (1.0 - 0.3 / contrast) * (
+                colour_1 * c1p
+              + colour_2 * c2p
+              + vec4(c3p * colour_3.rgb, c3p * colour_1.a)
+          );
+}"
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = SubResource( 3 )
+shader_param/time_val = null
+shader_param/spin_time = null
+shader_param/colour_1 = Plane( 0, 0, 0, 1 )
+shader_param/colour_2 = Plane( 0.2, 0.2, 0.2, 1 )
+shader_param/colour_3 = Plane( 0.1, 0.1, 0.1, 1 )
+shader_param/contrast = 1.0
+shader_param/spin_amount = 0.15
+
+[sub_resource type="Gradient" id=6]
+colors = PoolColorArray( 0.0588235, 0.0588235, 0.0588235, 1, 0.0980392, 0.0980392, 0.0980392, 1 )
+
+[sub_resource type="GradientTexture2D" id=8]
+gradient = SubResource( 6 )
+width = 32
+height = 32
+fill_to = Vector2( 1, 1 )
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 2 )
+
+[node name="menu" type="CanvasLayer"]
+script = ExtResource( 8 )
+
+[node name="bg" type="Sprite" parent="."]
+material = SubResource( 7 )
+z_index = -10
+texture = SubResource( 8 )
+centered = false
+script = ExtResource( 7 )
+
+[node name="buttons" type="GridContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = 16.0
+margin_right = -16.0
+margin_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+rect_pivot_offset = Vector2( -558, -16 )
+columns = 2
+
+[node name="start game" type="VBoxContainer" parent="buttons"]
+margin_right = 302.0
+margin_bottom = 442.0
+
+[node name="Button" type="Button" parent="buttons/start game"]
+margin_right = 302.0
+margin_bottom = 396.0
+rect_min_size = Vector2( 256, 256 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 1 )
+text = "Start Game"
+icon = ExtResource( 1 )
+icon_align = 1
+expand_icon = true
+
+[node name="OptionButton" type="OptionButton" parent="buttons/start game"]
+margin_top = 400.0
+margin_right = 302.0
+margin_bottom = 442.0
+rect_min_size = Vector2( 0, 42 )
+align = 1
+icon_align = 1
+
+[node name="module manager" type="Button" parent="buttons"]
+margin_left = 306.0
+margin_right = 608.0
+margin_bottom = 442.0
+rect_min_size = Vector2( 256, 256 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 1 )
+text = "Module Manager"
+icon = ExtResource( 4 )
+icon_align = 1
+expand_icon = true
+
+[node name="settings" type="Button" parent="buttons"]
+margin_top = 446.0
+margin_right = 302.0
+margin_bottom = 888.0
+rect_min_size = Vector2( 256, 256 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 1 )
+text = "Settings"
+icon = ExtResource( 5 )
+icon_align = 1
+expand_icon = true
+
+[node name="about" type="Button" parent="buttons"]
+margin_left = 306.0
+margin_top = 446.0
+margin_right = 608.0
+margin_bottom = 888.0
+rect_min_size = Vector2( 256, 256 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 1 )
+text = "About"
+icon = ExtResource( 6 )
+icon_align = 1
+expand_icon = true
