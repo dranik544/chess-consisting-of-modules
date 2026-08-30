@@ -8,7 +8,7 @@ export(PackedScene) var piece
 onready var tween = $Tween
 
 func _ready():
-	connect("focus_entered", self, "focus_entered_animation")
+#	connect("focus_entered", self, "focus_entered_animation")
 	connect("focus_exited", self, "focus_exited_animation")
 
 func focus_entered_animation():

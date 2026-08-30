@@ -29,6 +29,14 @@ func kill():
 	queue_free()
 
 
+func select_animation():
+	tween.interpolate_property(sprite, "scale", sprite.scale, Vector2.ONE*1.1, 0.1, Tween.TRANS_BACK, Tween.EASE_OUT)
+	tween.start()
+
+func unselect_animation():
+	tween.interpolate_property(sprite, "scale", sprite.scale, Vector2.ONE, 0.1, Tween.TRANS_CIRC, Tween.EASE_OUT)
+	tween.start()
+
 func move_animation(board, from: Vector2, to: Vector2):
 	var _from: Vector2 = board.get_pixel_position(from)
 	var _to: Vector2 = board.get_pixel_position(to)
@@ -37,7 +45,8 @@ func move_animation(board, from: Vector2, to: Vector2):
 	tween.start()
 
 func birth_animation():
-	tween.interpolate_property(self, "scale", Vector2.ZERO, Vector2.ONE, 0.1, Tween.TRANS_CIRC, Tween.EASE_OUT)
+	tween.interpolate_property(sprite, "scale", Vector2.ONE*2, Vector2.ONE, 0.5, Tween.TRANS_BOUNCE, Tween.EASE_OUT)
+	tween.interpolate_property(sprite, "modulate:a", 0.0, 1.0, 0.3)
 	tween.start()
 
 func death_animation():

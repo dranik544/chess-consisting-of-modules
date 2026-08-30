@@ -8,6 +8,7 @@ onready var pieces_node: Node2D = $pieces
 onready var dots_node: Node2D = $dots
 onready var tween = $Tween
 onready var cards: Node = get_tree().get_first_node_in_group("cards")
+onready var camera: Node = get_tree().get_first_node_in_group("camera")
 
 var grid = []
 var selected_piece = null
@@ -206,6 +207,8 @@ func make_move(from: Vector2, to: Vector2):
 	var legal = get_legal_moves_for(piece)
 	if not (to in legal): return
 	
+	try_give_card()
+	
 	var new_piece = piece.on_move(self, from, to)
 	
 	if new_piece != piece:
@@ -224,6 +227,7 @@ func make_move(from: Vector2, to: Vector2):
 	clear_dots()
 	selected_piece = null
 	state = false
+	Global.totalSteps += 1
 	
 	check_game_state()
 
@@ -232,9 +236,21 @@ func set_null_position(pos: Vector2):
 	if grid[pos.x][pos.y] != null:
 		if grid[pos.x][pos.y].has_method("kill"):
 			grid[pos.x][pos.y].kill()
+			if camera == null: camera = get_tree().get_first_node_in_group("camera")
+			camera.shake_screen()
 		else:
 			grid[pos.x][pos.y].queue_free()
 		grid[pos.x][pos.y] = null
+
+
+func try_give_card():
+	if Global.totalSteps % Global.preset["count give cards"] == 0:
+			if cards == null: cards = get_tree().get_first_node_in_group("cards")
+			
+			if cards:
+				if !Global.modCards.empty():
+					randomize()
+					cards.give_card(Global.modCards[randi() % Global.modCards.size()], not Global.white_turn)
 
 
 func check_game_state():
@@ -281,7 +297,7 @@ func show_dots(moves: Array):
 
 
 func on_click(cell: Vector2):
-	if not is_valid(cell): return
+	if !is_valid(cell): return
 	
 	if placement_mode:
 		if not is_valid(cell): return
@@ -291,10 +307,7 @@ func on_click(cell: Vector2):
 		
 		var piece = placement_card.piece.instance()
 		piece.color = Global.white_turn
-		piece.gridPos = cell
-		piece.position = get_pixel_position(cell)
-		pieces_node.add_child(piece)
-		grid[cell.x][cell.y] = piece
+		add_piece(piece, cell)
 		
 		if cards == null:
 			cards = get_tree().get_first_node_in_group("cards")
@@ -310,12 +323,12 @@ func on_click(cell: Vector2):
 		check_game_state()
 		return
 	
-	if not state:
+	if !state:
 		var piece = get_piece(cell)
-		if piece != null and piece.color == Global.white_turn:
+		if piece != null && piece.color == Global.white_turn:
 			selected_piece = piece
 			legal_moves = get_legal_moves_for(piece)
-			if not legal_moves.empty():
+			if !legal_moves.empty():
 				show_dots(legal_moves)
 				state = true
 			else:
@@ -326,10 +339,10 @@ func on_click(cell: Vector2):
 			make_move(selected_piece.gridPos, cell)
 		else:
 			var piece = get_piece(cell)
-			if piece != null and piece.color == Global.white_turn:
+			if piece != null && piece.color == Global.white_turn:
 				selected_piece = piece
 				legal_moves = get_legal_moves_for(piece)
-				if not legal_moves.empty():
+				if !legal_moves.empty():
 					show_dots(legal_moves)
 					state = true
 				else:
@@ -340,9 +353,20 @@ func on_click(cell: Vector2):
 				clear_dots()
 
 func enter_placement_mode(card_instance, color: bool):
+	if (
+		( Global.white_turn && is_in_check(find_king( Global.white_turn),  Global.white_turn))
+		||
+		(!Global.white_turn && is_in_check(find_king(!Global.white_turn), !Global.white_turn))
+	): exit_placement_mode(); return
+	
 	placement_mode = true
 	placement_card = card_instance
 	show_placement_zones()
+
+func exit_placement_mode():
+	placement_mode = false
+	placement_card = null
+	clear_dots()
 
 func show_placement_zones():
 	clear_dots()
