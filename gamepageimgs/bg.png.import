@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/bg2.png-3597391779512c6278d924c353eefc51.stex"
+path="res://.import/bg.png-71f9733bf95625573d5e51ea549f2e76.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://bg2.png"
-dest_files=[ "res://.import/bg2.png-3597391779512c6278d924c353eefc51.stex" ]
+source_file="res://gamepageimgs/bg.png"
+dest_files=[ "res://.import/bg.png-71f9733bf95625573d5e51ea549f2e76.stex" ]
 
 [params]
 

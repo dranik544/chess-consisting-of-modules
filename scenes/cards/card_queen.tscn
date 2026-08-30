@@ -6,6 +6,8 @@
 
 [node name="card_queen" instance=ExtResource( 1 )]
 rect_pivot_offset = Vector2( 48, 63.75 )
-texture_normal = ExtResource( 2 )
 type = "queen"
 piece = ExtResource( 3 )
+texture = ExtResource( 2 )
+
+[node name="import" type="Node" parent="." index="1"]

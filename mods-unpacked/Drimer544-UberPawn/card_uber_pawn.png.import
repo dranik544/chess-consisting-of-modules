@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/icon_itchio.png-1cbe4c9e99f4772865545483a57fd475.stex"
+path="res://.import/card_uber_pawn.png-70885c1828503af7d15f3af881f4f6eb.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icon_itchio.png"
-dest_files=[ "res://.import/icon_itchio.png-1cbe4c9e99f4772865545483a57fd475.stex" ]
+source_file="res://mods-unpacked/Drimer544-UberPawn/card_uber_pawn.png"
+dest_files=[ "res://.import/card_uber_pawn.png-70885c1828503af7d15f3af881f4f6eb.stex" ]
 
 [params]
 

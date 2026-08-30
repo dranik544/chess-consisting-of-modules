@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "FileSystemContextActions",
+"language": "GDScript",
+"path": "res://addons/mod_tool/interface/file_system/file_system_context_actions.gd"
+}, {
+"base": "Reference",
+"class": "FileSystemLink",
+"language": "GDScript",
+"path": "res://addons/mod_tool/scripts/file_system_link.gd"
+}, {
 "base": "Reference",
 "class": "JSONSchema",
 "language": "GDScript",
@@ -84,6 +94,51 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/mod_loader/resources/mod_manifest.gd"
 }, {
+"base": "Button",
+"class": "ModToolInterfaceButtonWithHint",
+"language": "GDScript",
+"path": "res://addons/mod_tool/interface/global/button_with_hint.gd"
+}, {
+"base": "HBoxContainer",
+"class": "ModToolInterfaceInput",
+"language": "GDScript",
+"path": "res://addons/mod_tool/interface/global/input.gd"
+}, {
+"base": "ModToolInterfaceInput",
+"class": "ModToolInterfaceInputOptions",
+"language": "GDScript",
+"path": "res://addons/mod_tool/interface/global/input_options.gd"
+}, {
+"base": "ModToolInterfaceInput",
+"class": "ModToolInterfaceInputString",
+"language": "GDScript",
+"path": "res://addons/mod_tool/interface/global/input_string.gd"
+}, {
+"base": "ModToolInterfaceInputString",
+"class": "ModToolInterfaceInputStringWithButton",
+"language": "GDScript",
+"path": "res://addons/mod_tool/interface/global/input_string_with_button.gd"
+}, {
+"base": "Node",
+"class": "ModToolStore",
+"language": "GDScript",
+"path": "res://addons/mod_tool/global/store.gd"
+}, {
+"base": "Node",
+"class": "ModToolUtils",
+"language": "GDScript",
+"path": "res://addons/mod_tool/global/utils.gd"
+}, {
+"base": "Node",
+"class": "ModToolZipBuilder",
+"language": "GDScript",
+"path": "res://addons/mod_tool/scripts/build_zip.gd"
+}, {
+"base": "Control",
+"class": "ModToolsPanel",
+"language": "GDScript",
+"path": "res://addons/mod_tool/interface/panel/tools_panel.gd"
+}, {
 "base": "Resource",
 "class": "ModUserProfile",
 "language": "GDScript",
@@ -130,6 +185,8 @@ _global_script_classes=[ {
 "path": "res://addons/mod_loader/internal/third_party/steam.gd"
 } ]
 _global_script_class_icons={
+"FileSystemContextActions": "",
+"FileSystemLink": "",
 "JSONSchema": "",
 "ModConfig": "",
 "ModData": "",
@@ -145,6 +202,15 @@ _global_script_class_icons={
 "ModLoaderUserProfile": "",
 "ModLoaderUtils": "",
 "ModManifest": "",
+"ModToolInterfaceButtonWithHint": "",
+"ModToolInterfaceInput": "",
+"ModToolInterfaceInputOptions": "",
+"ModToolInterfaceInputString": "",
+"ModToolInterfaceInputStringWithButton": "",
+"ModToolStore": "",
+"ModToolUtils": "",
+"ModToolZipBuilder": "",
+"ModToolsPanel": "",
 "ModUserProfile": "",
 "_ModLoaderCLI": "",
 "_ModLoaderCache": "",
@@ -160,10 +226,10 @@ _global_script_class_icons={
 
 config/name="Chess Consisting of Modules"
 run/main_scene="res://scenes/menu.tscn"
-boot_splash/image="res://bg.png"
+boot_splash/image="res://gamepageimgs/bg2.png"
 boot_splash/fullsize=false
 boot_splash/use_filter=false
-config/icon="res://icon.png"
+config/icon="res://gamepageimgs/icon.png"
 
 [autoload]
 
@@ -178,6 +244,10 @@ window/size/height=920
 window/handheld/orientation="portrait"
 window/stretch/mode="2d"
 window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/mod_tool/plugin.cfg" )
 
 [gui]
 

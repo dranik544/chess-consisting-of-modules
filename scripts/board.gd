@@ -24,6 +24,8 @@ func _ready():
 	
 	init_grid()
 	place_pieces()
+	
+	randomize()
 
 
 func init_grid():
@@ -307,8 +309,8 @@ func on_click(cell: Vector2):
 	if placement_mode:
 		if not is_valid(cell): return
 		if not is_empty(cell): return
-		if Global.white_turn and cell.x > 2: return
-		if not Global.white_turn and cell.x < 5: return
+		if Global.white_turn and cell.x > 3: return
+		if not Global.white_turn and cell.x < 4: return
 		
 		var piece = placement_card.piece.instance()
 		piece.color = Global.white_turn
@@ -374,8 +376,8 @@ func exit_placement_mode():
 
 func show_placement_zones():
 	clear_dots()
-	var start_row = 0 if Global.white_turn else 5
-	var end_row = 2 if Global.white_turn else 7
+	var start_row = 0 if Global.white_turn else 4
+	var end_row = 3 if Global.white_turn else 7
 	for row in range(start_row, end_row + 1):
 		for col in range(8):
 			var pos = Vector2(row, col)

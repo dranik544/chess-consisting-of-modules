@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/pieces/base_piece.tscn" type="PackedScene" id=1]
+[ext_resource path="res://mods-unpacked/Drimer544-UberPawn/uber_pawn.gd" type="Script" id=3]
+
+[node name="uber_pawn" instance=ExtResource( 1 )]
+script = ExtResource( 3 )
+type = "uber_pawn"
