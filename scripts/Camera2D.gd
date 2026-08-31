@@ -1,11 +1,15 @@
 extends Camera2D
 
+onready var board: Node2D = get_tree().get_first_node_in_group("board")
+
 var shakeSensitivity: float = 0.0
 var shakeDuration: float = 0.0
 
 
 func _ready():
 	add_to_group("camera")
+	
+	Global.connect("checkmate", self, "checkmate")
 
 func shake_screen(sensitivity: float = 15.0, duration: float = 0.5):
 	shakeSensitivity = sensitivity
@@ -20,5 +24,8 @@ func _process(delta):
 			rand_range(-shakeSensitivity, shakeSensitivity),
 			rand_range(-shakeSensitivity, shakeSensitivity)
 		)
-		offset = lerp(offset, randOffset, 10 * delta)
+		offset = lerp(offset, randOffset, 12 * delta)
 		shakeSensitivity -= shakeDuration
+
+func checkmate():
+	shake_screen(35.0, 0.3)

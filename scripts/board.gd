@@ -3,6 +3,14 @@ extends Node2D
 
 const BOARD_SIZE: int = 8
 const CELL_SIZE: int = 36
+const PIECE_SCENES = {
+	"pawn": preload("res://scenes/pieces/pawn.tscn"),
+	"rook": preload("res://scenes/pieces/rook.tscn"),
+	"knight": preload("res://scenes/pieces/knight.tscn"),
+	"bishop": preload("res://scenes/pieces/bishop.tscn"),
+	"queen": preload("res://scenes/pieces/queen.tscn"),
+	"king": preload("res://scenes/pieces/king.tscn")
+}
 
 onready var pieces_node: Node2D = $pieces
 onready var dots_node: Node2D = $dots
@@ -24,8 +32,14 @@ func _ready():
 	
 	init_grid()
 	place_pieces()
-	
 	randomize()
+	
+	get_tree().connect("network_peer_connected", self, "_on_peer_connected")
+
+
+func _on_peer_connected(id):
+	print("Игрок ", id, " подключился!")
+	rpc_id(id, "sync_board", get_board_data())
 
 
 func init_grid():
@@ -71,9 +85,11 @@ func get_grid_position(pixel: Vector2) -> Vector2:
 
 
 func place_pieces():
+	if get_tree().network_peer != null && !get_tree().is_network_server(): return
+	
 	# белые пешки
 	for col in range(8):
-		var pawn = load("res://scenes/pieces/pawn.tscn").instance()
+		var pawn = PIECE_SCENES["pawn"].instance()
 		pawn.color = true
 		pawn.gridPos = Vector2(1, col)
 		pawn.position = get_pixel_position(pawn.gridPos)
@@ -82,7 +98,7 @@ func place_pieces():
 	
 	# чёрные пешки
 	for col in range(8):
-		var pawn = load("res://scenes/pieces/pawn.tscn").instance()
+		var pawn = PIECE_SCENES["pawn"].instance()
 		pawn.color = false
 		pawn.gridPos = Vector2(6, col)
 		pawn.position = get_pixel_position(pawn.gridPos)
@@ -90,37 +106,27 @@ func place_pieces():
 		grid[6][col] = pawn
 	
 	# белые фигуры
-	var white_pieces = [
-		load("res://scenes/pieces/rook.tscn"),
-		load("res://scenes/pieces/knight.tscn"),
-		load("res://scenes/pieces/bishop.tscn"),
-		load("res://scenes/pieces/queen.tscn"),
-		load("res://scenes/pieces/king.tscn"),
-		load("res://scenes/pieces/bishop.tscn"),
-		load("res://scenes/pieces/knight.tscn"),
-		load("res://scenes/pieces/rook.tscn")
+	var pieces = [
+		PIECE_SCENES["rook"],
+		PIECE_SCENES["knight"],
+		PIECE_SCENES["bishop"],
+		PIECE_SCENES["queen"],
+		PIECE_SCENES["king"],
+		PIECE_SCENES["bishop"],
+		PIECE_SCENES["knight"],
+		PIECE_SCENES["rook"],
 	]
 	for col in range(8):
-		var piece = white_pieces[col].instance()
+		if !pieces[col]: continue
+		var piece = pieces[col].instance()
 		piece.color = true
 		piece.gridPos = Vector2(0, col)
 		piece.position = get_pixel_position(piece.gridPos)
 		pieces_node.add_child(piece)
 		grid[0][col] = piece
-	
-	# чёрные фигуры
-	var black_pieces = [
-		load("res://scenes/pieces/rook.tscn"),
-		load("res://scenes/pieces/knight.tscn"),
-		load("res://scenes/pieces/bishop.tscn"),
-		load("res://scenes/pieces/queen.tscn"),
-		load("res://scenes/pieces/king.tscn"),
-		load("res://scenes/pieces/bishop.tscn"),
-		load("res://scenes/pieces/knight.tscn"),
-		load("res://scenes/pieces/rook.tscn")
-	]
 	for col in range(8):
-		var piece = black_pieces[col].instance()
+		if !pieces[col]: continue
+		var piece = pieces[col].instance()
 		piece.color = false
 		piece.gridPos = Vector2(7, col)
 		piece.position = get_pixel_position(piece.gridPos)
@@ -202,7 +208,7 @@ func is_in_check(king_pos: Vector2, color: bool) -> bool:
 	return false
 
 
-func make_move(from: Vector2, to: Vector2):
+remote func make_move(from: Vector2, to: Vector2):
 	var piece = get_piece(from)
 	if piece == null: return
 	
@@ -233,39 +239,41 @@ func make_move(from: Vector2, to: Vector2):
 	Global.totalSteps += 1
 	
 	check_game_state()
+	
+	if get_tree().network_peer != null && get_tree().is_network_server(): rpc("sync_board", get_board_data())
 
 
 func set_null_position(pos: Vector2):
 	if grid[pos.x][pos.y] != null:
 		if grid[pos.x][pos.y].has_method("kill"):
 			grid[pos.x][pos.y].kill()
-			if camera == null: camera = get_tree().get_first_node_in_group("camera")
-			camera.shake_screen()
 		else:
 			grid[pos.x][pos.y].queue_free()
-		grid[pos.x][pos.y] = null
+			grid[pos.x][pos.y] = null
+		if camera == null: camera = get_tree().get_first_node_in_group("camera")
+		camera.shake_screen()
 
 
 func try_give_card():
-	if Global.totalSteps % Global.preset["count give cards"] == 0:
+	if Global.totalSteps % Global.preset["count give cards"] == Global.preset["count give cards"]-1:
 			if cards == null: cards = get_tree().get_first_node_in_group("cards")
 			
 			if cards:
 				if !Global.modCards.empty():
 					randomize()
-					cards.give_card(Global.modCards[randi() % Global.modCards.size()], Global.white_turn)
+					cards.give_card(Global.modCards.pick_random(), true)
+					cards.give_card(Global.modCards.pick_random(), false)
 
 
 func check_game_state():
-	var current_color = Global.white_turn
-	var king_pos = find_king(current_color)
-	var in_check = is_in_check(king_pos, current_color)
+	var king_pos = find_king(Global.white_turn)
+	var in_check = is_in_check(king_pos, Global.white_turn)
 	
 	var has_legal = false
 	for row in range(BOARD_SIZE):
 		for col in range(BOARD_SIZE):
 			var p = grid[row][col]
-			if p != null and p.color == current_color:
+			if p != null and p.color == Global.white_turn:
 				var moves = get_legal_moves_for(p)
 				if not moves.empty():
 					has_legal = true
@@ -276,7 +284,8 @@ func check_game_state():
 		grid[king_pos.x][king_pos.y].checkLabel(false)
 	elif in_check and not has_legal:
 		grid[king_pos.x][king_pos.y].checkLabel(true)
-		print("ШАХ И МАТ! Победили: ", "чёрные" if current_color else "белые")
+		Global.emit_signal("checkmate")
+		print("ШАХ И МАТ! Победили: ", "чёрные" if Global.white_turn else "белые")
 	elif in_check:
 		grid[king_pos.x][king_pos.y].checkLabel(true)
 		print("ШАХ!")
@@ -344,7 +353,10 @@ func on_click(cell: Vector2):
 				clear_dots()
 	else:
 		if cell in legal_moves:
-			make_move(selected_piece.gridPos, cell)
+			if get_tree().network_peer == null:
+				make_move(selected_piece.gridPos, cell)
+			else:
+				rpc("make_move", selected_piece.gridPos, cell)
 		else:
 			var piece = get_piece(cell)
 			if piece != null && piece.color == Global.white_turn:
@@ -391,6 +403,50 @@ func board_move_animation():
 	tween.interpolate_property(self, "scale", Vector2(1.0, 1.0), Vector2(0.99, 0.99), 0.04, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 	tween.interpolate_property(self, "scale", Vector2(0.99, 0.99), Vector2(1.0, 1.0), 0.3, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 0.1)
 	tween.start()
+
+
+func get_board_data() -> Dictionary:
+	var data = {
+		"pieces": [],
+		"white_turn": Global.white_turn,
+		"totalSteps": Global.totalSteps
+	}
+	for row in range(BOARD_SIZE):
+		for col in range(BOARD_SIZE):
+			var piece = grid[row][col]
+			if piece != null:
+				data["pieces"].append({
+					"type": piece.type,
+					"color": piece.color,
+					"row": row,
+					"col": col
+				})
+	return data
+
+remote func sync_board(data: Dictionary):
+	for child in pieces_node.get_children():
+		child.queue_free()
+	init_grid()
+	
+	for i in data["pieces"]:
+		var scene = PIECE_SCENES.get(i["type"])
+		if scene == null:
+			print("Ошибка: неизвестный тип фигуры ", i["type"])
+			continue
+		var piece = scene.instance()
+		piece.color = i["color"]
+		piece.gridPos = Vector2(i["row"], i["col"])
+		piece.position = get_pixel_position(piece.gridPos)
+		pieces_node.add_child(piece)
+		grid[i["row"]][i["col"]] = piece
+	
+	Global.white_turn = data["white_turn"]
+	Global.totalSteps = data["totalSteps"]
+	
+	selected_piece = null
+	legal_moves = []
+	state = false
+	clear_dots()
 
 
 func _input(event):

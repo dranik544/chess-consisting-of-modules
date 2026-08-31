@@ -1,12 +1,11 @@
 extends CanvasLayer
 
-onready var start_game_button = $"buttons/start game/Button"
-onready var start_game_option_button = $"buttons/start game/OptionButton"
+onready var start_game_button = $"buttons/start game"
+onready var ver = $buttons/ver
 
 
 func _ready():
-	start_game_option_button.add_item("OnePC Multiplayer")
-	start_game_option_button.add_item("Local Multiplayer")
+	ver.text = Global.ver + "\nCreated by Drimer544"
 	
 	start_game_button.connect("pressed", self, "_on_start_game_button_pressed")
 

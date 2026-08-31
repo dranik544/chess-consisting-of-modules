@@ -9,16 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
-"class": "FileSystemContextActions",
-"language": "GDScript",
-"path": "res://addons/mod_tool/interface/file_system/file_system_context_actions.gd"
-}, {
-"base": "Reference",
-"class": "FileSystemLink",
-"language": "GDScript",
-"path": "res://addons/mod_tool/scripts/file_system_link.gd"
-}, {
 "base": "Reference",
 "class": "JSONSchema",
 "language": "GDScript",
@@ -94,51 +84,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/mod_loader/resources/mod_manifest.gd"
 }, {
-"base": "Button",
-"class": "ModToolInterfaceButtonWithHint",
-"language": "GDScript",
-"path": "res://addons/mod_tool/interface/global/button_with_hint.gd"
-}, {
-"base": "HBoxContainer",
-"class": "ModToolInterfaceInput",
-"language": "GDScript",
-"path": "res://addons/mod_tool/interface/global/input.gd"
-}, {
-"base": "ModToolInterfaceInput",
-"class": "ModToolInterfaceInputOptions",
-"language": "GDScript",
-"path": "res://addons/mod_tool/interface/global/input_options.gd"
-}, {
-"base": "ModToolInterfaceInput",
-"class": "ModToolInterfaceInputString",
-"language": "GDScript",
-"path": "res://addons/mod_tool/interface/global/input_string.gd"
-}, {
-"base": "ModToolInterfaceInputString",
-"class": "ModToolInterfaceInputStringWithButton",
-"language": "GDScript",
-"path": "res://addons/mod_tool/interface/global/input_string_with_button.gd"
-}, {
-"base": "Node",
-"class": "ModToolStore",
-"language": "GDScript",
-"path": "res://addons/mod_tool/global/store.gd"
-}, {
-"base": "Node",
-"class": "ModToolUtils",
-"language": "GDScript",
-"path": "res://addons/mod_tool/global/utils.gd"
-}, {
-"base": "Node",
-"class": "ModToolZipBuilder",
-"language": "GDScript",
-"path": "res://addons/mod_tool/scripts/build_zip.gd"
-}, {
-"base": "Control",
-"class": "ModToolsPanel",
-"language": "GDScript",
-"path": "res://addons/mod_tool/interface/panel/tools_panel.gd"
-}, {
 "base": "Resource",
 "class": "ModUserProfile",
 "language": "GDScript",
@@ -185,8 +130,6 @@ _global_script_classes=[ {
 "path": "res://addons/mod_loader/internal/third_party/steam.gd"
 } ]
 _global_script_class_icons={
-"FileSystemContextActions": "",
-"FileSystemLink": "",
 "JSONSchema": "",
 "ModConfig": "",
 "ModData": "",
@@ -202,15 +145,6 @@ _global_script_class_icons={
 "ModLoaderUserProfile": "",
 "ModLoaderUtils": "",
 "ModManifest": "",
-"ModToolInterfaceButtonWithHint": "",
-"ModToolInterfaceInput": "",
-"ModToolInterfaceInputOptions": "",
-"ModToolInterfaceInputString": "",
-"ModToolInterfaceInputStringWithButton": "",
-"ModToolStore": "",
-"ModToolUtils": "",
-"ModToolZipBuilder": "",
-"ModToolsPanel": "",
 "ModUserProfile": "",
 "_ModLoaderCLI": "",
 "_ModLoaderCache": "",
@@ -236,6 +170,7 @@ config/icon="res://gamepageimgs/icon.png"
 ModLoaderStore="*res://addons/mod_loader/mod_loader_store.gd"
 ModLoader="*res://addons/mod_loader/mod_loader.gd"
 Global="*res://global.gd"
+LocalMultiplayer="*res://multiplayer.gd"
 
 [display]
 
@@ -244,10 +179,6 @@ window/size/height=920
 window/handheld/orientation="portrait"
 window/stretch/mode="2d"
 window/stretch/aspect="expand"
-
-[editor_plugins]
-
-enabled=PoolStringArray( "res://addons/mod_tool/plugin.cfg" )
 
 [gui]
 
@@ -276,6 +207,24 @@ texture={
 "size_limit": 0,
 "stream": false,
 "svg/scale": 1.0
+}
+
+[input]
+
+MENU_MULTIPLAYER={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":77,"unicode":0,"echo":false,"script":null)
+ ]
+}
+RESTART_ALL={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":82,"unicode":0,"echo":false,"script":null)
+ ]
+}
+RESTART_SCENE={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":82,"unicode":0,"echo":false,"script":null)
+ ]
 }
 
 [physics]

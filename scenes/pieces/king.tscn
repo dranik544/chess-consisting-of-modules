@@ -6,8 +6,8 @@
 [ext_resource path="res://scripts/pieces/king.gd" type="Script" id=4]
 
 [sub_resource type="Gradient" id=1]
-offsets = PoolRealArray( 0, 0.7, 1 )
-colors = PoolColorArray( 1, 0, 0, 1, 1, 0, 0, 0.0683761, 1, 0, 0, 0 )
+offsets = PoolRealArray( 0.264957, 0.6, 1 )
+colors = PoolColorArray( 1, 0, 0, 0.784314, 1, 0, 0, 0.0683761, 0, 0, 0, 0 )
 
 [sub_resource type="GradientTexture2D" id=2]
 gradient = SubResource( 1 )
@@ -24,12 +24,12 @@ blackSprite = ExtResource( 2 )
 
 [node name="danger" type="Label" parent="." index="3"]
 visible = false
-margin_left = -6.0
-margin_top = -9.0
-margin_right = 9.0
+margin_left = -7.0
+margin_top = -16.0
+margin_right = 8.0
 margin_bottom = 16.0
 custom_colors/font_color = Color( 1, 0, 0, 1 )
-text = "!!!"
+text = "!"
 align = 1
 valign = 1
 
@@ -38,9 +38,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -21.0
-margin_top = -23.0
-margin_right = 19.0
-margin_bottom = 17.0
+margin_left = -20.5
+margin_top = -19.0
+margin_right = 19.5
+margin_bottom = 21.0
 texture = SubResource( 2 )
 expand = true

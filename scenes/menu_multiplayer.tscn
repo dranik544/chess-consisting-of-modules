@@ -1,15 +1,12 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://sprites/pieces/white_pawn.png" type="Texture" id=1]
-[ext_resource path="res://fonts/Tokeely Brookings.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://theme.tres" type="Theme" id=3]
-[ext_resource path="res://sprites/pieces/white_king.png" type="Texture" id=4]
-[ext_resource path="res://sprites/pieces/white_bishop.png" type="Texture" id=5]
-[ext_resource path="res://sprites/pieces/white_rook.png" type="Texture" id=6]
-[ext_resource path="res://scripts/bg.gd" type="Script" id=7]
-[ext_resource path="res://scripts/menu.gd" type="Script" id=8]
+[ext_resource path="res://theme.tres" type="Theme" id=1]
+[ext_resource path="res://scripts/bg.gd" type="Script" id=2]
+[ext_resource path="res://sprites/pieces/white_pawn.png" type="Texture" id=3]
+[ext_resource path="res://scripts/menu_multiplayer.gd" type="Script" id=4]
+[ext_resource path="res://sprites/pieces/white_king.png" type="Texture" id=5]
 
-[sub_resource type="Shader" id=9]
+[sub_resource type="Shader" id=3]
 code = "shader_type canvas_item;
 
 // 
@@ -78,7 +75,7 @@ void fragment() {
 }"
 
 [sub_resource type="ShaderMaterial" id=7]
-shader = SubResource( 9 )
+shader = SubResource( 3 )
 shader_param/time_val = null
 shader_param/spin_time = null
 shader_param/colour_1 = Plane( 0, 0, 0, 1 )
@@ -87,36 +84,24 @@ shader_param/colour_3 = Plane( 0.1, 0.1, 0.1, 1 )
 shader_param/contrast = 1.0
 shader_param/spin_amount = 0.15
 
-[sub_resource type="Gradient" id=10]
+[sub_resource type="Gradient" id=6]
 colors = PoolColorArray( 0.0588235, 0.0588235, 0.0588235, 1, 0.0980392, 0.0980392, 0.0980392, 1 )
 
 [sub_resource type="GradientTexture2D" id=8]
-gradient = SubResource( 10 )
+gradient = SubResource( 6 )
 width = 32
 height = 32
 fill_to = Vector2( 1, 1 )
 
-[sub_resource type="DynamicFont" id=11]
-size = 88
-outline_size = 1
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=12]
-size = 24
-outline_size = 1
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 2 )
-
-[node name="menu" type="CanvasLayer"]
-script = ExtResource( 8 )
+[node name="menu_multiplayer" type="CanvasLayer"]
+script = ExtResource( 4 )
 
 [node name="bg" type="Sprite" parent="."]
 material = SubResource( 7 )
 z_index = -10
 texture = SubResource( 8 )
 centered = false
-script = ExtResource( 7 )
+script = ExtResource( 2 )
 
 [node name="buttons" type="VBoxContainer" parent="."]
 anchor_left = 0.5
@@ -130,72 +115,26 @@ margin_bottom = 444.0
 grow_horizontal = 0
 grow_vertical = 0
 rect_pivot_offset = Vector2( -558, -16 )
-alignment = 1
+alignment = 2
 
-[node name="name" type="Label" parent="buttons"]
-margin_top = 38.0
+[node name="host game" type="Button" parent="buttons"]
+margin_top = 628.0
 margin_right = 608.0
-margin_bottom = 272.0
-size_flags_horizontal = 3
-size_flags_vertical = 6
-custom_fonts/font = SubResource( 11 )
-text = "Chess Consisting of Modules"
-align = 1
-valign = 1
-autowrap = true
-
-[node name="start game" type="Button" parent="buttons"]
-margin_top = 315.0
-margin_right = 608.0
-margin_bottom = 443.0
+margin_bottom = 756.0
 rect_min_size = Vector2( 512, 128 )
-theme = ExtResource( 3 )
-text = "Start Game"
-icon = ExtResource( 1 )
-align = 0
-expand_icon = true
-
-[node name="module manager" type="Button" parent="buttons"]
-margin_top = 447.0
-margin_right = 608.0
-margin_bottom = 575.0
-rect_min_size = Vector2( 512, 128 )
-theme = ExtResource( 3 )
-text = "Module Manager"
-icon = ExtResource( 4 )
-align = 0
-expand_icon = true
-
-[node name="settings" type="Button" parent="buttons"]
-margin_top = 579.0
-margin_right = 608.0
-margin_bottom = 707.0
-rect_min_size = Vector2( 512, 128 )
-theme = ExtResource( 3 )
-text = "Settings"
+theme = ExtResource( 1 )
+text = "Host game"
 icon = ExtResource( 5 )
 align = 0
 expand_icon = true
 
-[node name="about" type="Button" parent="buttons"]
-margin_top = 711.0
-margin_right = 608.0
-margin_bottom = 839.0
-rect_min_size = Vector2( 512, 128 )
-theme = ExtResource( 3 )
-text = "About"
-icon = ExtResource( 6 )
-align = 0
-expand_icon = true
-
-[node name="ver" type="Label" parent="buttons"]
-margin_top = 843.0
+[node name="connect to game" type="Button" parent="buttons"]
+margin_top = 760.0
 margin_right = 608.0
 margin_bottom = 888.0
-size_flags_vertical = 0
-custom_fonts/font = SubResource( 12 )
-text = "ver
-Created by Drimer544"
-align = 2
-valign = 2
-autowrap = true
+rect_min_size = Vector2( 512, 128 )
+theme = ExtResource( 1 )
+text = "Connect to game"
+icon = ExtResource( 3 )
+align = 0
+expand_icon = true

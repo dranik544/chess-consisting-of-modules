@@ -8,7 +8,7 @@ onready var camera: Node2D = get_tree().get_first_node_in_group("camera")
 onready var tween = $Tween
 
 var cards = []
-var maxCards: int = 4
+var maxCards: int = 6
 var cardPressed: bool = false
 var lastPressedCard
 
@@ -17,7 +17,13 @@ func _ready():
 	add_to_group("cards")
 
 func give_card(card: PackedScene, color: bool):
-	if cards.size() > maxCards: return
+	var whiteCardCount: int = 1
+	var blackCardCount: int = 1
+	for i in cards:
+		whiteCardCount += 1 if i.color else 0
+		blackCardCount += 1 if not i.color else 0
+	
+	if (color && whiteCardCount > maxCards) || (!color && blackCardCount > maxCards) || card == null: return
 	
 	var _card: TextureButton = card.instance()
 	_card.color = color
@@ -28,16 +34,7 @@ func give_card(card: PackedScene, color: bool):
 	_card.flip_v = not color
 	_card.connect("pressed", self, "_on_card_pressed", [_card, color])
 	
-	tween.interpolate_property(_card, "modulate:a", 0.0, 1.0, 0.3)
-	tween.interpolate_property(_card, "rect_scale:x", 0.0, 1.0, 0.3, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
-	tween.start()
-	yield(tween, "tween_completed")
-	_card.flip_h = true
-	tween.interpolate_property(_card, "rect_scale:x", 1.0, 0.0, 0.3, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
-	tween.start()
-	yield(tween, "tween_completed")
-	_card.flip_h = false
-	tween.interpolate_property(_card, "rect_scale:x", 0.0, 1.0, 0.3, Tween.TRANS_CIRC, Tween.EASE_IN_OUT)
+	tween.interpolate_property(_card, "rect_position:y", _card.rect_position.y + (96.0 if color else -96.0), _card.rect_position.y, 0.3, Tween.TRANS_BACK, Tween.EASE_OUT)
 	tween.start()
 
 func _on_card_pressed(card, color: bool):
