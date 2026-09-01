@@ -15,8 +15,6 @@ onready var tween = $Tween
 func _ready():
 	if whiteSprite and blackSprite and sprite:
 		sprite.texture = whiteSprite if color else blackSprite
-	
-	birth_animation()
 
 func get_moves(board) -> Array:
 	return []

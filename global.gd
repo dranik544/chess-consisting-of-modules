@@ -14,10 +14,11 @@ var preset: Dictionary = {
 	"count give cards": 16,
 }
 
-var modPieces: Array = []
+var modPieces = {}
 var modCards: Array = [
 	load("res://scenes/cards/card_queen.tscn"),
 ]
+var cardData = {"white": [], "black": []}
 
 
 func _input(event):

@@ -18,10 +18,6 @@ func _ready():
 func _on_peer_connected(id):
 	print("Игрок ", id, " подключился!")
 	rpc_id(id, "load_game_scene")
-	
-	for i in 60: yield(get_tree(), "idle_frame")
-	
-	get_tree().change_scene("res://scenes/main.tscn")
 
 func _on_peer_disconnected(id: int):
 	print("Игрок ", id, " отключился!")
@@ -44,5 +40,13 @@ func client(ip = "127.0.0.1"):
 	get_tree().network_peer = peer
 	print("Подключаемся к серверу ", ip, ":7777")
 
+remote func client_ready():
+	if get_tree().is_network_server():
+		var board = get_tree().get_first_node_in_group("board")
+		if board:
+			board.rpc("sync_board", board.get_board_data())
+
 remote func load_game_scene():
 	get_tree().change_scene("res://scenes/main.tscn")
+	for i in 8: yield(get_tree(), "idle_frame")
+	rpc_id(1, "client_ready")
