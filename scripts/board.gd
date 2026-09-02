@@ -231,7 +231,9 @@ func try_give_card():
 			if cards:
 				if !Global.modCards.empty():
 					randomize()
-					cards.give_card(Global.modCards[randi() % Global.modCards.size()], Global.white_turn)
+					var randomCard = Global.modCards.pick_random()
+					cards.give_card(randomCard, true)
+					cards.give_card(randomCard, false)
 
 
 func check_game_state():

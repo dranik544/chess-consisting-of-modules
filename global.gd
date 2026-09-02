@@ -11,7 +11,7 @@ var white_turn = true
 var totalSteps: int = 0
 
 var preset: Dictionary = {
-	"count give cards": 16,
+	"count give cards": 24,
 }
 
 var modPieces = {}

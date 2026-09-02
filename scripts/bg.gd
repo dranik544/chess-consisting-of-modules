@@ -1,5 +1,7 @@
 extends Sprite
 
+onready var particles = get_node_or_null("particles")
+
 
 func _ready():
 	get_tree().root.connect("size_changed", self, "_on_size_changed")
@@ -7,8 +9,15 @@ func _ready():
 	_on_size_changed()
 
 func _on_size_changed():
-	scale = get_tree().root.size
+	texture.width = get_tree().root.size.x*2
+	texture.height = get_tree().root.size.y*2
 	position = -get_tree().root.size / 2
+	
+#	if particles:
+#		particles.position.x = get_tree().root.size.x
+#		print(get_tree().root.size.x / 2)
+#		particles.emission_rect_extents = get_tree().root.size / 2
+#		particles.restart()
 
 func _process(delta):
 	if material and material is ShaderMaterial:
