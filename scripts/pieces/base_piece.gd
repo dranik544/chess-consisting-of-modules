@@ -13,6 +13,10 @@ onready var tween = $Tween
 
 
 func _ready():
+	set_color(color)
+
+func set_color(new_color: bool):
+	color = new_color
 	if whiteSprite and blackSprite and sprite:
 		sprite.texture = whiteSprite if color else blackSprite
 
@@ -22,7 +26,7 @@ func get_moves(board) -> Array:
 func on_move(board, from: Vector2, to: Vector2):
 	return self
 
-func kill():
+func kill(board):
 	yield(death_animation(), "completed")
 	queue_free()
 

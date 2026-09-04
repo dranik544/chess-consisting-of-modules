@@ -20,6 +20,8 @@ func checkmate():
 	tween.start()
 	
 	yield(tween, "tween_all_completed")
-	yield(get_tree().create_timer(5.0), "timeout")
+	yield(get_tree().create_timer(4.0), "timeout")
+	
+	yield(Global.fade_animation(get_tree().current_scene, true, 1.5), "completed")
 	
 	get_tree().change_scene("res://scenes/menu.tscn")

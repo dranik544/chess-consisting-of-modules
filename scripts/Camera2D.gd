@@ -28,4 +28,4 @@ func _process(delta):
 		shakeSensitivity -= shakeDuration
 
 func checkmate():
-	shake_screen(35.0, 0.3)
+	shake_screen(40.0, 0.15)

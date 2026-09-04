@@ -9,9 +9,9 @@ func _ready():
 	_on_size_changed()
 
 func _on_size_changed():
-	texture.width = get_tree().root.size.x*2
-	texture.height = get_tree().root.size.y*2
-	position = -get_tree().root.size / 2
+	texture.width = get_viewport().size.x*2
+	texture.height = get_viewport().size.y*2
+	position = -get_viewport().size / 2
 	
 #	if particles:
 #		particles.position.x = get_tree().root.size.x
