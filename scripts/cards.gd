@@ -30,13 +30,15 @@ remote func give_card(index: int, color: bool):
 	
 	var _card = card.instance()
 	_card.color = color
-	_card.card_index = index
+	_card.card_index = cards.size()
+	print("card index: " + str(_card.card_index))
+	print("card color: " + str(_card.color))
 	
 	(white_container if color else black_container).add_child(_card)
 	cards.append(_card)
 	
 	_card.flip_v = not color
-	_card.connect("pressed", self, "_on_card_pressed", [index, color])
+	_card.connect("pressed", self, "_on_card_pressed", [_card.card_index, color])
 	
 	tween.interpolate_property(_card, "rect_position:y", 0.0 + (128.0 if color else -128.0), 0.0, 0.4, Tween.TRANS_BACK, Tween.EASE_OUT)
 	tween.start()
@@ -44,7 +46,8 @@ remote func give_card(index: int, color: bool):
 func _on_card_pressed(index: int, color: bool):
 	if index < 0 or index >= cards.size(): return
 	if color != Global.white_turn: return
-	var card = cards[index]
+	var card = find_card(index, color)
+	if card == null: print("карта не найдена"); return
 	
 	if board:
 		if lastPressedCard != card: cardPressed = true
@@ -60,19 +63,26 @@ func _on_card_pressed(index: int, color: bool):
 			card.focus_exited_animation()
 
 func remove_card(index: int, color: bool):
-	var card_to_remove = null
-	for c in cards:
-		if c.card_index == index and c.color == color:
-			card_to_remove = c
-			break
-	if card_to_remove == null: return
-	cards.erase(card_to_remove)
+	var card = find_card(index, color)
+	if card == null: print("карта не найдена"); return
 	
-	tween.interpolate_property(card_to_remove, "rect_scale", card_to_remove.rect_scale, Vector2.ONE*3, 0.4, Tween.TRANS_CIRC, Tween.EASE_IN)
-	tween.interpolate_property(card_to_remove, "rect_rotation", card_to_remove.rect_rotation, 15, 0.4, Tween.TRANS_CIRC, Tween.EASE_IN)
-	tween.interpolate_property(card_to_remove, "modulate:a", card_to_remove.modulate.a, 0.0, 0.4)
+	cards.erase(card)
+	
+	tween.interpolate_property(card, "rect_scale", card.rect_scale, Vector2.ONE*3, 0.4, Tween.TRANS_CIRC, Tween.EASE_IN)
+	tween.interpolate_property(card, "rect_rotation", card.rect_rotation, 15, 0.4, Tween.TRANS_CIRC, Tween.EASE_IN)
+	tween.interpolate_property(card, "modulate:a", card.modulate.a, 0.0, 0.4)
 	tween.start()
 	yield(tween, "tween_all_completed")
 	
-	(white_container if color else black_container).remove_child(card_to_remove)
-	card_to_remove.queue_free()
+	(white_container if color else black_container).remove_child(card)
+	card.queue_free()
+
+func find_card(index: int, color: bool):
+	var card = null
+	for i in cards:
+		if i.card_index == index && i.color == color:
+			card = i
+			break
+	
+	print("карта не найдена" if card == null else "карта найдена")
+	return card

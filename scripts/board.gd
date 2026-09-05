@@ -49,7 +49,7 @@ func _ready():
 	
 	randomize()
 	
-	OS.set_window_title("Chess Consisting of Modules " + ("(BLACK)" if Global.myColor else "(WHITE)"))
+	OS.set_window_title("Chess Consisting of Modules " + ("(WHITE)" if Global.myColor else "(BLACK)"))
 
 
 func init_grid():
@@ -373,7 +373,7 @@ func exit_placement_mode():
 func use_card(cell: Vector2, card_index: int):
 	if card_index < 0 or card_index >= Global.modCards.size(): return
 	
-	var card = Global.modCards[card_index].instance()
+	var card = cards.find_card(card_index, Global.myColor).instance()
 	var piece = card.piece.instance()
 	piece.set_color(Global.white_turn)
 	add_piece(piece, cell)
@@ -452,6 +452,9 @@ func _on_server_disconnected():
 	yield(Global.fade_animation(get_tree().current_scene, true, 1.5), "completed")
 	Global.warningText = "[center][color=red]HOST HAS BEEN DISCONNECTED!"
 	get_tree().change_scene("res://scenes/menu.tscn")
+
+
+
 
 
 
